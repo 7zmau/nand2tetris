@@ -45,9 +45,9 @@ CHIP ALU {
         // Operations for x.
         Not16(in=x, out=notx);  // Invert the x input.
         And16(a=x, b=notx, out=zerox); // And the x input and the inverted x input - output is 0.
-        Mux16(a=x, b=zerox, sel=zx, out=x1); // Choose between original x input or the zeroed x input. Output is the 'filtered' value of x -- x1.
+        Mux16(a=x, b=zerox, sel=zx, out=x1); // Choose original x or zeroed x - filtered output x1.
         Not16(in=x1, out=notx1); // Invert x1.
-        Mux16(a=x1, b=notx1, sel=nx, out=x2); // Choose between inverted x1 or original x1. Output is the filtered value of x1 -- x2.
+        Mux16(a=x1, b=notx1, sel=nx, out=x2); //  Choose original x1 or inverted x1 - filtered output x2.
 
         // Operations for y - Same as x.
         Not16(in=y, out=noty);
@@ -58,10 +58,10 @@ CHIP ALU {
 
         And16(a=x2, b=y2, out=andx2y2); // And x2 and y2.
         Add16(a=x2, b=y2, out=addx2y2); // Add x2 and y2.
-        Mux16(a=andx2y2, b=addx2y2, sel=f, out=o1); // Choose the result of And or Add.
+        Mux16(a=andx2y2, b=addx2y2, sel=f, out=o1); // Choose the result of And or Add -- o1
         
         Not16(in=o1, out=o2); // Negate the result -- o2.
-        Mux16(a=o1, b=o2, sel=no, out=out); // Choose between negated result (o2) and original result (o1). Output is out.
+        Mux16(a=o1, b=o2, sel=no, out=out); // Choose o1 or o2. Output is out,
         
         // Operations to determine if out is 0
         Mux16(a=o1, b=o2, sel=no, out[0..7]=lout, out[8..15]=hout); // Split the output to two 8-bit buses.
