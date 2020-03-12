@@ -44,17 +44,17 @@ CHIP ALU {
     PARTS:
         // Operations for x.
         Not16(in=x, out=notx);  // Invert the x input.
-        And16(a=x, b=notx, out=zerox); // And the x input and the inverted x input - will produce the output 0.
+        And16(a=x, b=notx, out=zerox); // And the x input and the inverted x input - output is 0.
         Mux16(a=x, b=zerox, sel=zx, out=x1); // Choose between original x input or the zeroed x input. Output is the 'filtered' value of x -- x1.
         Not16(in=x1, out=notx1); // Invert x1.
         Mux16(a=x1, b=notx1, sel=nx, out=x2); // Choose between inverted x1 or original x1. Output is the filtered value of x1 -- x2.
 
-        // Operations for y.
-        Not16(in=y, out=noty);  // Invert the y input.
-        And16(a=y, b=noty, out=zeroy); // And the y input and the inverted y input - will produce the output 0.
-        Mux16(a=y, b=zeroy, sel=zy, out=y1); // Choose between original y input or the zeroed y input. Output is the filtered value of y -- y1.
-        Not16(in=y1, out=noty1); // Invert y1.
-        Mux16(a=y1, b=noty1, sel=ny, out=y2); // Choose between inverted y1 or original y1. Output is the filtered value of y1 -- y2.
+        // Operations for y - Same as x.
+        Not16(in=y, out=noty);
+        And16(a=y, b=noty, out=zeroy);
+        Mux16(a=y, b=zeroy, sel=zy, out=y1);
+        Not16(in=y1, out=noty1);
+        Mux16(a=y1, b=noty1, sel=ny, out=y2);
 
         And16(a=x2, b=y2, out=andx2y2); // And x2 and y2.
         Add16(a=x2, b=y2, out=addx2y2); // Add x2 and y2.
@@ -64,14 +64,14 @@ CHIP ALU {
         Mux16(a=o1, b=o2, sel=no, out=out); // Choose between negated result (o2) and original result (o1). Output is out.
         
         // Operations to determine if out is 0
-        Mux16(a=o1, b=o2, sel=no, out[0..7]=lout, out[8..15]=hout); // Split the output to two 8-bit buses. Since we only have Or8Way.
+        Mux16(a=o1, b=o2, sel=no, out[0..7]=lout, out[8..15]=hout); // Split the output to two 8-bit buses.
         Or8Way(in=lout, out=z1); // Will output 1 if any of the individual bits is 1.
         Or8Way(in=hout, out=z2); // Will output 1 if any of the individual bits is 1.
         Or(a=z1, b=z2, out=isZr); // Will output 0 only if both z1 and z2 is 0. 
         Not(in=isZr, out=zr); // if isZr is 0, zr is 1 else zr is 0.
 
         // Operations to determine if out is negative.
-        // Just check if the most significant bit is 1.
+        // Check if the most significant bit is 1.
         Mux16(a=o1, b=o2, sel=no, out[0..14]=waste, out[15]=isNg);
         And(a=isNg, b=true, out=ng);
 }
